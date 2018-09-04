@@ -4,8 +4,8 @@
  * Widget add to compare module for shop.
  * 
  * @version 1.0
- * @author CORNER CMS development team <dev@corner-cms.com>
- * @copyright Copyright &copy; 2016 Andrew Semenov
+ * @author PIXELION CMS development team <dev@pixelion.com.ua>
+ * @link http://pixelion.com.ua PIXELION CMS
  * 
  * Example:
  * <code>
