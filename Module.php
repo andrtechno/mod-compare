@@ -1,7 +1,11 @@
 <?php
+
 namespace panix\mod\compare;
 
-class Module extends \panix\engine\WebModule {
+use panix\engine\WebModule;
+
+class Module extends WebModule
+{
 
     public $routes = [
         'compare' => 'compare/default/index',
