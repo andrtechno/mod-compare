@@ -1,9 +1,14 @@
 <?php
+
 namespace panix\mod\compare\components;
 
-use panix\mod\shop\models\ShopProduct;
+use Yii;
+use panix\mod\shop\models\Product;
 use panix\mod\shop\models\Attribute;
-class CompareProducts extends \yii\base\Component {
+use yii\base\BaseObject;
+
+class CompareProducts extends BaseObject
+{
 
     /**
      * Max products to compare
@@ -16,7 +21,7 @@ class CompareProducts extends \yii\base\Component {
     public $sessionKey = 'CompareProducts';
 
     /**
-     * @var CHttpSession
+     * @var \panix\engine\web\DbSession
      */
     public $session;
 
@@ -33,21 +38,24 @@ class CompareProducts extends \yii\base\Component {
     /**
      * Initialize component
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->session = Yii::$app->session;
 
         if (!isset($this->session[$this->sessionKey]) || !is_array($this->session[$this->sessionKey]))
             $this->session[$this->sessionKey] = array();
+        parent::__construct();
     }
 
     /**
      * Check if product exists add to list
      * @param string $id product id
      */
-    public function add($id) {
-        if ($this->count() <= self::MAX_PRODUCTS && ShopProduct::find()->published()->where(['id' => $id])->count() > 0) {
+    public function add($id)
+    {
+        if ($this->count() <= self::MAX_PRODUCTS && Product::find()->published()->where(['id' => $id])->count() > 0) {
             $current = $this->getIds();
-            $current[(int) $id] = (int) $id;
+            $current[(int)$id] = (int)$id;
             $this->setIds($current);
             return true;
         }
@@ -58,7 +66,8 @@ class CompareProducts extends \yii\base\Component {
      * Remove product from list
      * @param $id
      */
-    public function remove($id) {
+    public function remove($id)
+    {
         $current = $this->getIds();
         if (isset($current[$id]))
             unset($current[$id]);
@@ -68,30 +77,34 @@ class CompareProducts extends \yii\base\Component {
     /**
      * @return array of product id added to compare
      */
-    public function getIds() {
+    public function getIds()
+    {
         return $this->session[$this->sessionKey];
     }
 
     /**
      * @param array $ids
      */
-    public function setIds(array $ids) {
+    public function setIds(array $ids)
+    {
         $this->session[$this->sessionKey] = array_unique($ids);
     }
 
     /**
      * Clear compare list
      */
-    public function clear() {
+    public function clear()
+    {
         $this->setIds(array());
     }
 
     /**
      * @return array of ShopProduct models to compare
      */
-    public function getProducts() {
+    public function getProducts()
+    {
         if ($this->_products === null)
-            $this->_products = ShopProduct::find()->where(array_values($this->getIds()))->all();
+            $this->_products = Product::find()->where(array_values($this->getIds()))->all();
 
 
         $result = array();
@@ -117,7 +130,8 @@ class CompareProducts extends \yii\base\Component {
      * Count products to compare
      * @return int
      */
-    public function count() {
+    public function count()
+    {
         return sizeof($this->getIds());
     }
 
@@ -126,17 +140,20 @@ class CompareProducts extends \yii\base\Component {
      * @static
      * @return int
      */
-    public static function countSession() {
-        return sizeof(Yii::$app->session['CompareProducts']);
+    public static function countSession()
+    {
+        $count = (Yii::$app->session['CompareProducts']) ? Yii::$app->session['CompareProducts'] : [];
+        return sizeof($count);
     }
 
     /**
      * Load ShopAttribute models by names
      * @return array of ShopAttribute models
      */
-    public function getAttributes() {
+    public function getAttributes()
+    {
 
-        $this->_products = ShopProduct::find()->where(array_values($this->getIds()))->all();
+        $this->_products = Product::find()->where(array_values($this->getIds()))->all();
         $result = array();
         foreach ($this->_products as $state) {
             $cid = $state->mainCategory->id;
@@ -149,39 +166,38 @@ class CompareProducts extends \yii\base\Component {
             // Then append the state onto it
             $result[$cid]['items'][] = array('list1', 'list2'); //$state
             $result[$cid]['name'] = $state->mainCategory->name;
-             $result[$cid][$state->id]['attrs'] = array();
-            
-                if (isset($result[$cid][$state->id]['attrs'])) {
-           
-                    $names = array();
-                    foreach ($this->_products as $p)
-                        $names = array_merge($names, array_keys($p->getEavAttributes()));
+            $result[$cid][$state->id]['attrs'] = array();
 
-                    $cr = new CDbCriteria;
-                    $cr->addInCondition('t.name', $names);
+            if (isset($result[$cid][$state->id]['attrs'])) {
 
-                    $query = ShopAttribute::model()
-                            ->displayOnFront()
-                            ->useInCompare()
-                            ->findAll($cr);
+                $names = array();
+                foreach ($this->_products as $p)
+                    $names = array_merge($names, array_keys($p->getEavAttributes()));
 
-                    foreach ($query as $m) {
-                        $result[$cid][$state->id]['attrs'][$m->name] = $m;
-                        $result[$cid]['filter_name'][$m->name] = $m;
-                    }
+                $cr = new CDbCriteria;
+                $cr->addInCondition('t.name', $names);
+
+                $query = Attribute::model()
+                    ->displayOnFront()
+                    ->useInCompare()
+                    ->findAll($cr);
+
+                foreach ($query as $m) {
+                    $result[$cid][$state->id]['attrs'][$m->name] = $m;
+                    $result[$cid]['filter_name'][$m->name] = $m;
                 }
-          
+            }
+
         }
-
-
 
 
         return $result;
     }
 
-    public function getAttributesold() {
+    public function getAttributesold()
+    {
 
-        $this->_products = ShopProduct::model()->findAllByPk(array_values($this->getIds()));
+        $this->_products = Product::model()->findAllByPk(array_values($this->getIds()));
         $result = array();
         foreach ($this->_products as $state) {
             $cid = $state->mainCategory->id;
@@ -207,15 +223,15 @@ class CompareProducts extends \yii\base\Component {
                 $cr->addInCondition('t.name', $names);
 
                 $query = Attribute::model()
-                        /* ->with(array(
-                          'options'=>array(
-                          'distinct'=>true,
-                          'select'=>'value'
-                          )
-                          )) */
-                        ->displayOnFront()
-                        ->useInCompare()
-                        ->findAll($cr);
+                    /* ->with(array(
+                      'options'=>array(
+                      'distinct'=>true,
+                      'select'=>'value'
+                      )
+                      )) */
+                    ->displayOnFront()
+                    ->useInCompare()
+                    ->findAll($cr);
 
                 foreach ($query as $m) {
                     //if(array_unique($m))
@@ -232,13 +248,13 @@ class CompareProducts extends \yii\base\Component {
         }
 
 
-
         return $result;
     }
 
-    public function getAttributesById($id) {
+    public function getAttributesById($id)
+    {
 
-        $this->_products = ShopProduct::findOne($id);
+        $this->_products = Product::findOne($id);
         $result = array();
         $cid = $this->_products->mainCategory->id;
         // Create the sub-array if it doesn't exist
@@ -263,15 +279,15 @@ class CompareProducts extends \yii\base\Component {
             $cr->addInCondition('t.name', $names);
 
             $query = ShopAttribute::model()
-                    /* ->with(array(
-                      'options'=>array(
-                      'distinct'=>true,
-                      'select'=>'value'
-                      )
-                      )) */
-                    ->displayOnFront()
-                    ->useInCompare()
-                    ->findAll($cr);
+                /* ->with(array(
+                  'options'=>array(
+                  'distinct'=>true,
+                  'select'=>'value'
+                  )
+                  )) */
+                ->displayOnFront()
+                ->useInCompare()
+                ->findAll($cr);
 
             foreach ($query as $m) {
                 //if(array_unique($m))
@@ -281,29 +297,28 @@ class CompareProducts extends \yii\base\Component {
         }
 
 
-
         return $result;
     }
 
 }
 
 /**
- * 
-        if ($this->_attributes === null) {
-            $this->_attributes = array();
-            $names = array();
-            foreach ($this->getProducts() as $p)
-                $names = array_merge($names, array_keys($p->getEavAttributes()));
-
-            $cr = new CDbCriteria;
-            $cr->addInCondition('t.name', $names);
-            $query = ShopAttribute::model()
-                    ->displayOnFront()
-                    ->useInCompare()
-                    ->findAll($cr);
-
-            foreach ($query as $m)
-                $this->_attributes[$m->name] = $m;
-        }
-        return $this->_attributes;
+ *
+ * if ($this->_attributes === null) {
+ * $this->_attributes = array();
+ * $names = array();
+ * foreach ($this->getProducts() as $p)
+ * $names = array_merge($names, array_keys($p->getEavAttributes()));
+ *
+ * $cr = new CDbCriteria;
+ * $cr->addInCondition('t.name', $names);
+ * $query = ShopAttribute::model()
+ * ->displayOnFront()
+ * ->useInCompare()
+ * ->findAll($cr);
+ *
+ * foreach ($query as $m)
+ * $this->_attributes[$m->name] = $m;
+ * }
+ * return $this->_attributes;
  */
