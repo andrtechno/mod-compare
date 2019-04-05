@@ -27,6 +27,6 @@ to the require section of your `composer.json` file.
 Add to web config.
 ```
 'modules' => [
-    'compare' => ['class' => 'panix\compare\Module'],
+    'compare' => ['class' => 'panix\mod\compare\Module'],
 ],
 
