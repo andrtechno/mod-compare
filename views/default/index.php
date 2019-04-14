@@ -4,7 +4,10 @@ use panix\engine\bootstrap\ActiveForm;
 
 $isType = isset($_POST['CompareForm']['type']) ? (int)$_POST['CompareForm']['type'] : 0;
 
+?>
 
+<h1><?= $this->context->pageName; ?></h1>
+<?php
 foreach ($this->context->model->products as $id => $group) {
     ?>
 
