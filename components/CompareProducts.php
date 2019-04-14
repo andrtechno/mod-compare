@@ -105,10 +105,10 @@ class CompareProducts extends BaseObject
     {
 
         if ($this->_products === null)
-            $this->_products = Product::find()->where(['id'=>array_values($this->getIds())])->all();
+            $this->_products = Product::find()->where(['id' => array_values($this->getIds())])->all();
 
 
-        $result = array();
+        $result = [];
 
 
         foreach ($this->_products as $state) {
@@ -116,13 +116,37 @@ class CompareProducts extends BaseObject
             $cid = $state->mainCategory->id;
             // Create the sub-array if it doesn't exist
             if (!isset($result[$cid])) {
-                $result[$cid]['items'] = array();
+                $result[$cid]['items'] = [];
                 $result[$cid]['name'] = $state->mainCategory->name;
             }
 
             // Then append the state onto it
             $result[$cid]['items'][] = $state;
             $result[$cid]['name'] = $state->mainCategory->name;
+
+
+            $result[$cid]['attributes'] = [];
+
+            if (isset($result[$cid]['attributes'])) {
+
+                $names = [];
+                foreach ($this->_products as $p)
+                    $names = array_merge($names, array_keys($p->getEavAttributes()));
+
+                $query = Attribute::find()
+                    ->where(['in', 'name', $names])
+                    ->displayOnFront()
+                    ->useInCompare()
+                    ->all();
+
+                if ($query) {
+
+                    foreach ($query as $m) {
+                        $result[$cid]['attributes'][$m->name] = $m;
+                    }
+                }
+            }
+
         }
         return $result;
     }
@@ -154,38 +178,47 @@ class CompareProducts extends BaseObject
     public function getAttributes()
     {
 
-        $this->_products = Product::find()->where(array_values($this->getIds()))->all();
-        $result = array();
+        $this->_products = Product::find()->where(['id' => array_values($this->getIds())])->all();
+        $data = $this->getProducts();
+        $result = [];
+
+        foreach ($data as $state) {
+
+
+        }
+
         foreach ($this->_products as $state) {
             $cid = $state->mainCategory->id;
             // Create the sub-array if it doesn't exist
             if (!isset($result[$cid])) {
-                // $result[$cid]['items'] = array();
-                //$result[$cid]['name'] = $state->mainCategory->name;
+                $result[$cid]['items'] = array();
+                $result[$cid]['name'] = $state->mainCategory->name;
             }
 
             // Then append the state onto it
             $result[$cid]['items'][] = array('list1', 'list2'); //$state
             $result[$cid]['name'] = $state->mainCategory->name;
-            $result[$cid][$state->id]['attrs'] = array();
+            $result[$cid][$state->id]['attrs'] = [];
 
             if (isset($result[$cid][$state->id]['attrs'])) {
 
-                $names = array();
+                $names = [];
                 foreach ($this->_products as $p)
                     $names = array_merge($names, array_keys($p->getEavAttributes()));
 
-                $cr = new CDbCriteria;
-                $cr->addInCondition('t.name', $names);
+                $query = Attribute::find();
+                $query->where(['in', 'name', $names]);
+                $query->displayOnFront();
+                $query->useInCompare();
+                $query->all();
 
-                $query = Attribute::model()
-                    ->displayOnFront()
-                    ->useInCompare()
-                    ->findAll($cr);
+                if ($query) {
 
-                foreach ($query as $m) {
-                    $result[$cid][$state->id]['attrs'][$m->name] = $m;
-                    $result[$cid]['filter_name'][$m->name] = $m;
+                    foreach ($query as $m) {
+
+                        $result[$cid][$state->id]['attrs'][$m->name] = $m;
+                        $result[$cid]['filter_name'][$m->name] = $m;
+                    }
                 }
             }
 

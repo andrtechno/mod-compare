@@ -10,27 +10,30 @@ use panix\mod\compare\components\CompareProducts;
 use panix\engine\CMS;
 use yii\web\Response;
 
-class DefaultController extends WebController {
+class DefaultController extends WebController
+{
 
     /**
      * @var CompareProducts
      */
     public $model;
 
-    public function beforeAction($action) {
+    /**
+     * @var array
+     */
+    protected $attributes = [];
+
+    public function beforeAction($action)
+    {
         $this->model = new CompareProducts;
         return true;
     }
 
     /**
-     * @var array
-     */
-    protected $attributes = array();
-
-    /**
      * Render index view
      */
-    public function actionIndex($catId = false) {
+    public function actionIndex($cat_id = false)
+    {
 
 
         $this->pageName = Yii::t('compare/default', 'MODULE_NAME');
@@ -41,15 +44,18 @@ class DefaultController extends WebController {
         if (isset($_POST['CompareForm']))
             $compareForm->attributes = $_POST['CompareForm'];
 
-        if (!$catId && isset($this->model->products)) {
+        if (!$cat_id && isset($this->model->products)) {
             foreach ($this->model->products as $id => $group) {
-                $catId = $id;
+                $cat_id = $id;
                 break;
             }
         }
 
 
-        return $this->render(CMS::isModile() ? 'mobile_index' : 'index', array('compareForm' => $compareForm, 'catId' => $catId));
+        return $this->render(CMS::isModile() ? 'mobile_index' : 'index', [
+            'compareForm' => $compareForm,
+            'cat_id' => $cat_id
+        ]);
     }
 
     /**
@@ -57,7 +63,8 @@ class DefaultController extends WebController {
      * @param $id \panix\mod\shop\models\Product Product id
      * @return \yii\web\Response
      */
-    public function actionAdd($id) {
+    public function actionAdd($id)
+    {
         $this->model->add($id);
         $message = Yii::t('compare/default', 'Продукт успешно добавлен в список сравнения.');
         //$this->addFlashMessage($message);
@@ -77,7 +84,8 @@ class DefaultController extends WebController {
      * Remove product from list
      * @param string $id product id
      */
-    public function actionRemove($id) {
+    public function actionRemove($id)
+    {
         $this->model->remove($id);
         if (!Yii::$app->request->isAjax)
             return $this->redirect($this->createUrl('index'));

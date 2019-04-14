@@ -1,25 +1,42 @@
-  <script>
-  $(function() {
-    $( "#tabs" ).tabs();
-  });
-  </script>
-  
-
 <?php
+use panix\engine\Html;
+use panix\engine\bootstrap\ActiveForm;
+
+$isType = isset($_POST['CompareForm']['type']) ? (int)$_POST['CompareForm']['type'] : 0;
+
+
 foreach ($this->context->model->products as $id => $group) {
-?>
-
-    <li><a href="#tabs-<?=$id?>"><?=$group['name']?></a></li>
-
-  <?php
-    echo "<b>" . $group['name'] . "</b></br>";
     ?>
 
 
-    <table class="compareTable table table-bordered">
-        <thead>
+    <div class="table-responsive">
+        <table class="compareTable table table-bordered">
+            <thead>
             <tr>
-                <td width="200px"></td>
+                <td width="200px">
+                    <div class="compare-count-products">/ <?= count($this->context->model->getIds()) ?> товаров</div>
+                    <ul class="list-unstyled compare-categories-list text-uppercase">
+                        <?php
+                        foreach ($this->context->model->products as $id => $group) {
+                            $categoryArray[] = $id;
+                            $gp[$id] = $group;
+                            $class = ($cat_id == $id) ? 'active' : '';
+                            ?>
+                            <li class="<?= $class ?>"><?= Html::a($group['name'], ['/compare/default/index', 'cat_id' => $id]) ?></li>
+                        <?php } ?>
+                    </ul>
+
+                    <?php
+                    $form = ActiveForm::begin([
+                        'options' => ['id' => 'compare-form']
+                    ]);
+
+                    echo $form->field($compareForm, 'type')
+                        ->radioList([0 => Yii::t('compare/default', 'ALL'), 1 => Yii::t('compare/default', 'ONLY_DIFF')])
+                        ->hint(Yii::t('compare/default', 'HINT'));
+                    ?>
+                    <?php ActiveForm::end(); ?>
+                </td>
                 <?php foreach ($group['items'] as $p) { ?>
                     <td>
                         <div class="products_list wish_list">
@@ -28,24 +45,28 @@ foreach ($this->context->model->products as $id => $group) {
                     </td>
                 <?php } ?>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             <?php
-            if(isset($this->model->attributes[$id]['attr'])){
-            foreach ($this->model->attributes[$id]['attr'] as $attribute) {
-                $unq = array();
+            // \yii\helpers\VarDumper::dump($group,10,true);die;
+            foreach ($group['attributes'] as $attribute) {
+                if ($isType) {
+                    $unq = [];
 
-                foreach ($group['items'] as $product) {
+                    foreach ($group['items'] as $product) {
 
-                    $unq[] = (string) $product->{'eav_' . $attribute->name};
-                }
-
-                foreach (array_count_values($unq) as $pid=>$count) {
-                    $flag = true;
-
-                    if ($count == count($group['items'])) {
-                        $flag = false;
+                        $unq[] = (string)$product->{'eav_' . $attribute->name};
                     }
+
+                    foreach (array_count_values($unq) as $pid => $count) {
+                        $flag = true;
+
+                        if ($count == count($group['items'])) {
+                            $flag = false;
+                        }
+                    }
+                } else {
+                    $flag = true;
                 }
                 if ($flag) {
                     ?>
@@ -63,15 +84,20 @@ foreach ($this->context->model->products as $id => $group) {
                     </tr>
                     <?php
                 }
-            } } 
+            }
             ?>
-        </tbody>
-    </table>
-<?php 
+            </tbody>
+        </table>
+    </div>
+    <?php
 }
-?>
-<script>
+
+
+$this->registerJs("
     $(function () {
+    
+        $('#tabs').tabs();
+        
         var result = new Array();
 
         $('.compareTable tbody tr td:not(.attr)').each(function (k, obj) {
@@ -89,6 +115,12 @@ foreach ($this->context->model->products as $id => $group) {
              }
              }*/
         });
+        
+        
+        $('#compareform-type input').change(function () {
+            $('#compare-form').submit();
+        });
         // alert(result);
     });
-</script>
+");
+?>

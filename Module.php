@@ -11,8 +11,9 @@ class Module extends WebModule implements BootstrapInterface
     {
         $app->urlManager->addRules(
             [
+                'compare/<cat_id:\d+>' => 'compare/default/index',
                 'compare' => 'compare/default/index',
-                'compare/catId/<catId:\d+>' => 'compare/default/index',
+
                 'compare/add/<id:\d+>' => 'compare/default/add',
                 'compare/remove/<id:\d+>' => 'compare/default/remove',
             ],
