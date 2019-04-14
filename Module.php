@@ -3,15 +3,22 @@
 namespace panix\mod\compare;
 
 use panix\engine\WebModule;
+use yii\base\BootstrapInterface;
 
-class Module extends WebModule
+class Module extends WebModule implements BootstrapInterface
 {
+    public function bootstrap($app)
+    {
+        $app->urlManager->addRules(
+            [
+                'compare' => 'compare/default/index',
+                'compare/catId/<catId:\d+>' => 'compare/default/index',
+                'compare/add/<id:\d+>' => 'compare/default/add',
+                'compare/remove/<id:\d+>' => 'compare/default/remove',
+            ],
+            true
+        );
+    }
 
-    public $routes = [
-        'compare' => 'compare/default/index',
-        'compare/catId/<catId>' => 'compare/default/index',
-        'compare/add/<id>' => 'compare/default/add',
-        'compare/remove/<id>' => 'compare/default/remove',
-    ];
 
 }

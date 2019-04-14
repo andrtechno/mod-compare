@@ -1,48 +1,58 @@
 <?php
 
+namespace panix\mod\compare\widgets;
+
+use panix\mod\compare\widgets\assets\CompareAsset;
+use Yii;
+use panix\engine\data\Widget;
+use panix\mod\compare\components\CompareProducts;
+use yii\base\InvalidArgumentException;
+
 /**
  * Widget add to compare module for shop.
- * 
+ *
  * @version 1.0
  * @author PIXELION CMS development team <dev@pixelion.com.ua>
  * @link http://pixelion.com.ua PIXELION CMS
- * 
+ *
  * Example:
  * <code>
- * $this->widget('mod.compare.widgets.CompareWidget',array('pk'=>$model->primaryKey));
+ * echo \panix\mod\compare\widgets\CompareWidget::widget([
+ *  'pk' => $model->primaryKey,
+ *  'skin' => 'icon',
+ *  'linkOptions' => ['class' => 'btn btn-compare']
+ * ]);
  * </code>
- * 
+ *
  */
-Yii::import('mod.compare.components.CompareProducts');
+class CompareWidget extends Widget
+{
 
-class CompareWidget extends Widget {
-
-    public $registerFile = array('compare.js');
     public $pk;
-    public $linkOptions = array();
+    public $linkOptions = [];
     public $isAdded = false;
 
-    public function init() {
-        if (!YII_DEBUG)
-            Yii::import('mod.compare.CompareModule');
+    public function init()
+    {
         if (is_null($this->pk))
-            throw new CException(Yii::t('default', 'ERROR_PK_ISNULL'));
+            throw new InvalidArgumentException(Yii::t('default', 'ERROR_PK_ISNULL'));
 
-        $this->assetsPath = dirname(__FILE__) . '/assets';
+        CompareAsset::register($this->view);
         parent::init();
     }
 
-    public function run() {
+    public function run()
+    {
         $compareComponent = new CompareProducts();
         $this->isAdded = (in_array($this->pk, $compareComponent->getIds())) ? true : false;
 
-        $linkOptions = array();
+        $linkOptions = [];
         $class = ($this->isAdded) ? 'added' : '';
         $textType = ($this->isAdded) ? 1 : 0;
         $linkOptions['class'] = '';
 
         if (isset($this->linkOptions['class'])) {
-            $linkOptions['class'] .=(isset($this->linkOptions['class'])) ? $this->linkOptions['class'] : '';
+            $linkOptions['class'] .= (isset($this->linkOptions['class'])) ? $this->linkOptions['class'] : '';
         }
 
         $linkOptions['id'] = 'compare-' . $this->pk;
@@ -50,7 +60,7 @@ class CompareWidget extends Widget {
         $this->linkOptions = $linkOptions;
 
 
-        $this->render($this->skin, array());
+        return $this->render($this->skin, []);
     }
 
 }

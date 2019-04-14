@@ -103,8 +103,9 @@ class CompareProducts extends BaseObject
      */
     public function getProducts()
     {
+
         if ($this->_products === null)
-            $this->_products = Product::find()->where(array_values($this->getIds()))->all();
+            $this->_products = Product::find()->where(['id'=>array_values($this->getIds())])->all();
 
 
         $result = array();
@@ -241,7 +242,7 @@ class CompareProducts extends BaseObject
 
                         $value = $product->{'eav_' . $m->name};
 
-                        //   echo $value === null ? Yii::t('ShopModule.default', 'Не указано') : $value;
+                        //   echo $value === null ? Yii::t('shop/default', 'Не указано') : $value;
                     }
                 }
             }

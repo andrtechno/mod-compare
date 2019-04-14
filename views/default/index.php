@@ -6,7 +6,7 @@
   
 
 <?php
-foreach ($this->model->products as $id => $group) {
+foreach ($this->context->model->products as $id => $group) {
 ?>
 
     <li><a href="#tabs-<?=$id?>"><?=$group['name']?></a></li>
@@ -23,7 +23,7 @@ foreach ($this->model->products as $id => $group) {
                 <?php foreach ($group['items'] as $p) { ?>
                     <td>
                         <div class="products_list wish_list">
-                            <?php $this->renderPartial('_product', array('data' => $p)) ?>
+                            <?php echo $this->render('_product', ['data' => $p]) ?>
                         </div>
                     </td>
                 <?php } ?>
@@ -56,7 +56,7 @@ foreach ($this->model->products as $id => $group) {
                             <td>
                                 <?php
                                 $value = $product->{'eav_' . $attribute->name};
-                                echo $value === null ? Yii::t('ShopModule.default', 'Не указано') : $value;
+                                echo $value === null ? Yii::t('shop/default', 'Не указано') : $value;
                                 ?>
                             </td>
                         <?php } ?>

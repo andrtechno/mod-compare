@@ -1,5 +1,4 @@
 <?php
+use panix\engine\Html;
 
-
-
-echo Html::link(Html::tag('i',array('class'=>'icon-compare'),'',true), 'javascript:compare.add(' . $this->pk . ');', $this->linkOptions);
+echo Html::a(Html::icon('icon-compare'), 'javascript:compare.add(' . $this->context->pk . ');', $this->context->linkOptions);

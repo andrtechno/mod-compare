@@ -2,9 +2,14 @@
 
 namespace panix\mod\compare\controllers;
 
+
+use panix\mod\compare\forms\CompareForm;
+use Yii;
 use panix\engine\controllers\WebController;
 use panix\mod\compare\components\CompareProducts;
 use panix\engine\CMS;
+use yii\web\Response;
+
 class DefaultController extends WebController {
 
     /**
@@ -27,12 +32,12 @@ class DefaultController extends WebController {
      */
     public function actionIndex($catId = false) {
 
-        $this->pageTitle = Yii::t('compare/default', 'Сравнение продуктов');
+
         $this->pageName = Yii::t('compare/default', 'MODULE_NAME');
 
 
-        $this->breadcrumbs = array($this->pageName);
-        $compareForm = new CompareForm;
+        $this->breadcrumbs[] = $this->pageName;
+        $compareForm = new CompareForm();
         if (isset($_POST['CompareForm']))
             $compareForm->attributes = $_POST['CompareForm'];
 
@@ -49,20 +54,22 @@ class DefaultController extends WebController {
 
     /**
      * Add product to compare list
-     * @param $id ShopProduct id
+     * @param $id \panix\mod\shop\models\Product Product id
+     * @return \yii\web\Response
      */
     public function actionAdd($id) {
         $this->model->add($id);
         $message = Yii::t('compare/default', 'Продукт успешно добавлен в список сравнения.');
-        $this->addFlashMessage($message);
+        //$this->addFlashMessage($message);
         if (!Yii::$app->request->isAjax) {
-            $this->redirect($this->createUrl('index'));
+            return $this->redirect($this->createUrl('index'));
         } else {
-            echo Json::encode(array(
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            Yii::$app->response->data = [
                 'message' => $message,
                 'btn_message' => Yii::t('compare/default', 'BTN_COMPARE'),
                 'count' => $this->model->count()
-            ));
+            ];
         }
     }
 
