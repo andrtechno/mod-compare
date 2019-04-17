@@ -49,7 +49,7 @@ class CompareWidget extends Widget
 
         if($this->isAdded){
             $this->linkOptions['title']=Yii::t('compare/default','ALREADY_EXIST');
-            $this->linkOptions['class'] .= ' added disabled';
+            $this->linkOptions['class'] .= ' added';
         }
 
         return $this->render($this->skin, []);
