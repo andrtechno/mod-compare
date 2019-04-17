@@ -2,7 +2,7 @@
 
 namespace panix\mod\compare\widgets;
 
-use panix\mod\compare\widgets\assets\CompareAsset;
+use panix\mod\compare\assets\CompareAsset;
 use Yii;
 use panix\engine\data\Widget;
 use panix\mod\compare\components\CompareProducts;
@@ -46,19 +46,11 @@ class CompareWidget extends Widget
         $compareComponent = new CompareProducts();
         $this->isAdded = (in_array($this->pk, $compareComponent->getIds())) ? true : false;
 
-        $linkOptions = [];
-        $class = ($this->isAdded) ? 'added' : '';
-        $textType = ($this->isAdded) ? 1 : 0;
-        $linkOptions['class'] = '';
 
-        if (isset($this->linkOptions['class'])) {
-            $linkOptions['class'] .= (isset($this->linkOptions['class'])) ? $this->linkOptions['class'] : '';
+        if($this->isAdded){
+            $this->linkOptions['title']=Yii::t('compare/default','ALREADY_EXIST');
+            $this->linkOptions['class'] .= ' added disabled';
         }
-
-        $linkOptions['id'] = 'compare-' . $this->pk;
-        $linkOptions['class'] .= ' ' . $class;
-        $this->linkOptions = $linkOptions;
-
 
         return $this->render($this->skin, []);
     }

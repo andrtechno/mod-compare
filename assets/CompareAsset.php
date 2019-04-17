@@ -1,6 +1,6 @@
 <?php
 
-namespace panix\mod\compare\widgets\assets;
+namespace panix\mod\compare\assets;
 
 use panix\engine\web\AssetBundle;
 

@@ -75,7 +75,8 @@ class DefaultController extends WebController
             Yii::$app->response->data = [
                 'message' => $message,
                 'btn_message' => Yii::t('compare/default', 'BTN_COMPARE'),
-                'count' => $this->model->count()
+                'count' => $this->model->count(),
+                'title'=>Yii::t('compare/default','ALREADY_EXIST')
             ];
         }
     }
