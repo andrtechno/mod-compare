@@ -61,7 +61,7 @@ class DefaultController extends WebController
     /**
      * Add product to compare list
      * @param $id \panix\mod\shop\models\Product Product id
-     * @return \yii\web\Response
+     * @return Response
      */
     public function actionAdd($id)
     {
@@ -69,7 +69,7 @@ class DefaultController extends WebController
         $message = Yii::t('compare/default', 'Продукт успешно добавлен в список сравнения.');
         //$this->addFlashMessage($message);
         if (!Yii::$app->request->isAjax) {
-            return $this->redirect($this->createUrl('index'));
+            return $this->redirect(['index']);
         } else {
             Yii::$app->response->format = Response::FORMAT_JSON;
             Yii::$app->response->data = [
@@ -82,13 +82,14 @@ class DefaultController extends WebController
 
     /**
      * Remove product from list
-     * @param string $id product id
+     * @param int $id product id
+     * @return Response
      */
     public function actionRemove($id)
     {
         $this->model->remove($id);
         if (!Yii::$app->request->isAjax)
-            return $this->redirect($this->createUrl('index'));
+            return $this->redirect(['index']);
     }
 
 }

@@ -99,7 +99,7 @@ class CompareProducts extends BaseObject
     }
 
     /**
-     * @return array of ShopProduct models to compare
+     * @return array of /panix/mod/shop/models/Product models to compare
      */
     public function getProducts()
     {
@@ -115,10 +115,10 @@ class CompareProducts extends BaseObject
 
             $cid = $state->mainCategory->id;
             // Create the sub-array if it doesn't exist
-            if (!isset($result[$cid])) {
-                $result[$cid]['items'] = [];
-                $result[$cid]['name'] = $state->mainCategory->name;
-            }
+           // if (!isset($result[$cid])) {
+           //     $result[$cid]['items'] = [];
+           //     $result[$cid]['name'] = $state->mainCategory->name;
+           // }
 
             // Then append the state onto it
             $result[$cid]['items'][] = $state;
