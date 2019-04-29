@@ -2,7 +2,7 @@
 
 namespace panix\mod\compare\widgets;
 
-use panix\mod\compare\assets\CompareAsset;
+use panix\mod\compare\CompareAsset;
 use Yii;
 use panix\engine\data\Widget;
 use panix\mod\compare\components\CompareProducts;

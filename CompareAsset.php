@@ -1,12 +1,12 @@
 <?php
 
-namespace panix\mod\compare\assets;
+namespace panix\mod\compare;
 
 use panix\engine\web\AssetBundle;
 
 class CompareAsset extends AssetBundle {
 
-    public $sourcePath = __DIR__;
+    public $sourcePath = __DIR__.'/assets';
 
     public $js = [
         'js/compare.js',
