@@ -44,7 +44,7 @@ class CompareProducts extends BaseObject
         $this->session = Yii::$app->session;
 
         if (!isset($this->session[$this->sessionKey]) || !is_array($this->session[$this->sessionKey]))
-            $this->session[$this->sessionKey] = array();
+            $this->session[$this->sessionKey] = [];
         parent::__construct();
     }
 
@@ -97,7 +97,7 @@ class CompareProducts extends BaseObject
      */
     public function clear()
     {
-        $this->setIds(array());
+        $this->setIds([]);
     }
 
     /**
@@ -106,14 +106,16 @@ class CompareProducts extends BaseObject
     public function getProducts()
     {
 
-        if ($this->_products === null)
-            $this->_products = Product::find()->where(['id' => array_values($this->getIds())])->all();
-
+        if ($this->_products === null){
+            $this->_products = Product::find()
+                ->where(['id' => array_values($this->getIds())])
+                ->all();
+        }
 
         $result = [];
 
         foreach ($this->_products as $state) {
-
+            Yii::debug('getProducts');
             $cid = $state->mainCategory->id;
             // Create the sub-array if it doesn't exist
            // if (!isset($result[$cid])) {
@@ -128,17 +130,14 @@ class CompareProducts extends BaseObject
 
             $result[$cid]['attributes'] = [];
 
-            if (isset($result[$cid]['attributes'])) {
+            $names = [];
+            $names = array_merge($names, array_keys($state->getEavAttributes()));
 
-                $names = [];
-                foreach ($this->_products as $p){
-                    $names = array_merge($names, array_keys($p->getEavAttributes()));
-                }
+            if (isset($result[$cid]['attributes'])) {
 
                 $query = Attribute::find()
                     ->where(['in', 'name', $names])
                     ->displayOnFront()
-                    //->joinWith('translations')
                     ->useInCompare()
                   //  ->asArray()
                     ->all();
@@ -182,7 +181,7 @@ class CompareProducts extends BaseObject
      * Load ShopAttribute models by names
      * @return array of ShopAttribute models
      */
-    public function getAttributes()
+    public function getAttributes2()
     {
 
         $this->_products = Product::find()->where(['id' => array_values($this->getIds())])->all();

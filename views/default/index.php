@@ -7,8 +7,8 @@ $isType = isset($_POST['CompareForm']['type']) ? (int)$_POST['CompareForm']['typ
 
 //var_dump(Yii::$app->request->get('cat_id'));
 
-$result = (Yii::$app->request->get('cat_id'))?'s':'ss';
-$items = $this->context->model->products[Yii::$app->request->get('cat_id')]['items'];
+$items = $result[$cat_id]['items'];
+
 ?>
 
 <h1><?= $this->context->pageName; ?></h1>
@@ -20,10 +20,10 @@ $items = $this->context->model->products[Yii::$app->request->get('cat_id')]['ite
             <thead>
             <tr>
                 <td width="200px">
-                    <div class="compare-count-products">/ <?= count($this->context->model->getIds()) ?> товаров</div>
+                    <div class="compare-count-products">/ <?= count((new \panix\mod\compare\components\CompareProducts())->getIds()) ?> товаров</div>
                     <ul class="list-unstyled compare-categories-list text-uppercase">
                         <?php
-                        foreach ($this->context->model->products as $id => $group) {
+                        foreach ($result as $id => $group) {
                             $categoryArray[] = $id;
                             $gp[$id] = $group;
                             $class = ($cat_id == $id) ? 'active' : '';
@@ -58,7 +58,7 @@ $items = $this->context->model->products[Yii::$app->request->get('cat_id')]['ite
             <tbody>
             <?php
             // \yii\helpers\VarDumper::dump($group,10,true);die;
-            foreach ($this->context->model->products[Yii::$app->request->get('cat_id')]['attributes'] as $attribute) {
+            foreach ($result[$cat_id]['attributes'] as $attribute) {
                 if ($isType) {
                     $unq = [];
 

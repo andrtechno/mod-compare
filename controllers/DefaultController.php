@@ -25,7 +25,7 @@ class DefaultController extends WebController
 
     public function beforeAction($action)
     {
-        $this->model = new CompareProducts;
+     //   $this->model = new CompareProducts;
         return true;
     }
 
@@ -38,23 +38,27 @@ class DefaultController extends WebController
     {
         $this->pageName = Yii::t('compare/default', 'MODULE_NAME');
 
-
+        $result = (new CompareProducts)->getProducts();
         $this->breadcrumbs[] = $this->pageName;
         $compareForm = new CompareForm();
         if (isset($_POST['CompareForm']))
             $compareForm->attributes = $_POST['CompareForm'];
 
-        if (!$cat_id && isset($this->model->products)) {
-           // foreach ($this->model->products as $id => $group) {
-               // $cat_id = $id;
-              //  break;
-           // }
+        if (!$cat_id && isset($result)) {
+
+
+            return $this->redirect(['/compare/default/index', 'cat_id' => array_key_first($this->model->products)]);
+            // foreach ($this->model->products as $id => $group) {
+            // $cat_id = $id;
+            //  break;
+            // }
         }
 
-
+        //return $this->render('empty', []);
         return $this->render(CMS::isModile() ? 'mobile_index' : 'index', [
             'compareForm' => $compareForm,
-            'cat_id' => $cat_id
+            'cat_id' => $cat_id,
+            'result' => $result
         ]);
     }
 
@@ -76,7 +80,7 @@ class DefaultController extends WebController
                 'message' => $message,
                 'btn_message' => Yii::t('compare/default', 'BTN_COMPARE'),
                 'count' => $this->model->count(),
-                'title'=>Yii::t('compare/default','ALREADY_EXIST')
+                'title' => Yii::t('compare/default', 'ALREADY_EXIST')
             ];
         }
     }
