@@ -25,7 +25,7 @@ class DefaultController extends WebController
 
     public function beforeAction($action)
     {
-     //   $this->model = new CompareProducts;
+        $this->model = new CompareProducts;
         return true;
     }
 
@@ -38,16 +38,20 @@ class DefaultController extends WebController
     {
         $this->pageName = Yii::t('compare/default', 'MODULE_NAME');
 
-        $result = (new CompareProducts)->getProducts();
+        $result = $this->model->getProducts();
         $this->breadcrumbs[] = $this->pageName;
         $compareForm = new CompareForm();
         if (isset($_POST['CompareForm']))
             $compareForm->attributes = $_POST['CompareForm'];
 
+
         if (!$cat_id && isset($result)) {
 
-
-            return $this->redirect(['/compare/default/index', 'cat_id' => array_key_first($this->model->products)]);
+            if ($this->model->getIds()) {
+                return $this->redirect(['/compare/default/index', 'cat_id' => array_key_first($result)]);
+            } else {
+                return $this->redirect(['/']);
+            }
             // foreach ($this->model->products as $id => $group) {
             // $cat_id = $id;
             //  break;

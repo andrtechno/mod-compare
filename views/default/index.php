@@ -9,6 +9,7 @@ $isType = isset($_POST['CompareForm']['type']) ? (int)$_POST['CompareForm']['typ
 
 $items = $result[$cat_id]['items'];
 
+
 ?>
 
 <h1><?= $this->context->pageName; ?></h1>
@@ -20,7 +21,7 @@ $items = $result[$cat_id]['items'];
             <thead>
             <tr>
                 <td width="200px">
-                    <div class="compare-count-products">/ <?= count((new \panix\mod\compare\components\CompareProducts())->getIds()) ?> товаров</div>
+                    <div class="compare-count-products">/ <?= count($this->context->model->getIds()) ?> товаров</div>
                     <ul class="list-unstyled compare-categories-list text-uppercase">
                         <?php
                         foreach ($result as $id => $group) {
@@ -49,7 +50,11 @@ $items = $result[$cat_id]['items'];
                 foreach ($items as $p) { ?>
                     <td>
                         <div class="products_list">
-                            <?php echo $this->render('_product', ['data' => $p]) ?>
+                            <?php
+
+                            echo $this->render('_product', ['data' => $p]);
+
+                            ?>
                         </div>
                     </td>
                 <?php } ?>
@@ -59,6 +64,7 @@ $items = $result[$cat_id]['items'];
             <?php
             // \yii\helpers\VarDumper::dump($group,10,true);die;
             foreach ($result[$cat_id]['attributes'] as $attribute) {
+                $flag = false;
                 if ($isType) {
                     $unq = [];
 
