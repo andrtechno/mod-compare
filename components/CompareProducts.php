@@ -6,6 +6,7 @@ use Yii;
 use panix\mod\shop\models\Product;
 use panix\mod\shop\models\Attribute;
 use yii\base\BaseObject;
+use yii\helpers\VarDumper;
 
 class CompareProducts extends BaseObject
 {
@@ -49,7 +50,8 @@ class CompareProducts extends BaseObject
 
     /**
      * Check if product exists add to list
-     * @param string $id product id
+     * @param int $id product id
+     * @return bool
      */
     public function add($id)
     {
@@ -110,7 +112,6 @@ class CompareProducts extends BaseObject
 
         $result = [];
 
-
         foreach ($this->_products as $state) {
 
             $cid = $state->mainCategory->id;
@@ -130,24 +131,30 @@ class CompareProducts extends BaseObject
             if (isset($result[$cid]['attributes'])) {
 
                 $names = [];
-                foreach ($this->_products as $p)
+                foreach ($this->_products as $p){
                     $names = array_merge($names, array_keys($p->getEavAttributes()));
+                }
 
                 $query = Attribute::find()
                     ->where(['in', 'name', $names])
                     ->displayOnFront()
+                    //->joinWith('translations')
                     ->useInCompare()
+                  //  ->asArray()
                     ->all();
 
                 if ($query) {
 
                     foreach ($query as $m) {
+                        //$result[$cid]['attributes'][$m['name']] = $m;
                         $result[$cid]['attributes'][$m->name] = $m;
+                       // $result[$cid]['attributes']['test'] = $m;
                     }
                 }
             }
 
         }
+      //  echo VarDumper::dump($result,3,true);die;
         return $result;
     }
 

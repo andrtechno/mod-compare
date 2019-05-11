@@ -31,11 +31,11 @@ class DefaultController extends WebController
 
     /**
      * Render index view
+     * @param bool|int $cat_id
+     * @return string
      */
     public function actionIndex($cat_id = false)
     {
-
-
         $this->pageName = Yii::t('compare/default', 'MODULE_NAME');
 
 
@@ -45,10 +45,10 @@ class DefaultController extends WebController
             $compareForm->attributes = $_POST['CompareForm'];
 
         if (!$cat_id && isset($this->model->products)) {
-            foreach ($this->model->products as $id => $group) {
-                $cat_id = $id;
-                break;
-            }
+           // foreach ($this->model->products as $id => $group) {
+               // $cat_id = $id;
+              //  break;
+           // }
         }
 
 

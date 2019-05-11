@@ -4,27 +4,101 @@ use panix\engine\bootstrap\ActiveForm;
 
 $isType = isset($_POST['CompareForm']['type']) ? (int)$_POST['CompareForm']['type'] : 0;
 
+
+//var_dump(Yii::$app->request->get('cat_id'));
+
+$result = (Yii::$app->request->get('cat_id'))?'s':'ss';
+$items = $this->context->model->products[Yii::$app->request->get('cat_id')]['items'];
 ?>
 
 <h1><?= $this->context->pageName; ?></h1>
 
 
 
+    <div class="table-responsive">
+        <table class="compareTable table table-bordered">
+            <thead>
+            <tr>
+                <td width="200px">
+                    <div class="compare-count-products">/ <?= count($this->context->model->getIds()) ?> товаров</div>
+                    <ul class="list-unstyled compare-categories-list text-uppercase">
+                        <?php
+                        foreach ($this->context->model->products as $id => $group) {
+                            $categoryArray[] = $id;
+                            $gp[$id] = $group;
+                            $class = ($cat_id == $id) ? 'active' : '';
+                            ?>
+                            <li class="<?= $class ?>"><?= Html::a($group['name'], ['/compare/default/index', 'cat_id' => $id]) ?></li>
+                        <?php } ?>
+                    </ul>
 
-<table class="compareTable table table-bordered">
-    <tr>
-        <td style="width: 200px">sdadsa</td>
-        <td rowspan="2">products</td>
-    </tr>
-    <tr>
-        <td style="width: 200px">attributes</td>
+                    <?php
+                    $form = ActiveForm::begin([
+                        'options' => ['id' => 'compare-form']
+                    ]);
 
-    </tr>
-</table>
+                    echo $form->field($compareForm, 'type')
+                        ->radioList([0 => Yii::t('compare/default', 'ALL'), 1 => Yii::t('compare/default', 'ONLY_DIFF')])
+                        ->hint(Yii::t('compare/default', 'HINT'));
+                    ?>
+                    <?php ActiveForm::end(); ?>
+                </td>
+                <?php
 
 
+                foreach ($items as $p) { ?>
+                    <td>
+                        <div class="products_list">
+                            <?php echo $this->render('_product', ['data' => $p]) ?>
+                        </div>
+                    </td>
+                <?php } ?>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            // \yii\helpers\VarDumper::dump($group,10,true);die;
+            foreach ($this->context->model->products[Yii::$app->request->get('cat_id')]['attributes'] as $attribute) {
+                if ($isType) {
+                    $unq = [];
 
-<?php
+                    foreach ($items as $product) {
+
+                        $unq[] = (string)$product->{'eav_' . $attribute->name};
+                    }
+
+                    foreach (array_count_values($unq) as $pid => $count) {
+                        $flag = true;
+
+                        if ($count == count($items)) {
+                            $flag = false;
+                        }
+                    }
+                } else {
+                    $flag = true;
+                }
+                if ($flag) {
+                    ?>
+                    <tr>
+                        <td class="attr"><?= $attribute->title ?></td>
+                        <?php foreach ($items as $product) {
+                            ?>
+                            <td>
+                                <?php
+                                $value = $product->{'eav_' . $attribute->name};
+                                echo $value === null ? Yii::t('shop/default', 'Не указано') : $value;
+                                ?>
+                            </td>
+                        <?php } ?>
+                    </tr>
+                    <?php
+                }
+            }
+            ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
 
 
 
