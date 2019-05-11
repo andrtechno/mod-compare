@@ -2,13 +2,12 @@
 
 namespace panix\mod\compare\controllers;
 
-
-use panix\mod\compare\forms\CompareForm;
 use Yii;
+use yii\web\Response;
+use panix\mod\compare\forms\CompareForm;
 use panix\engine\controllers\WebController;
 use panix\mod\compare\components\CompareProducts;
 use panix\engine\CMS;
-use yii\web\Response;
 
 class DefaultController extends WebController
 {
