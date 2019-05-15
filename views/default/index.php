@@ -16,95 +16,95 @@ $items = $result[$cat_id]['items'];
 
 
 
-    <div class="table-responsive">
-        <table class="compareTable table table-bordered">
-            <thead>
-            <tr>
-                <td width="200px">
-                    <div class="compare-count-products">/ <?= count($this->context->model->getIds()) ?> товаров</div>
-                    <ul class="list-unstyled compare-categories-list text-uppercase">
-                        <?php
-                        foreach ($result as $id => $group) {
-                            $categoryArray[] = $id;
-                            $gp[$id] = $group;
-                            $class = ($cat_id == $id) ? 'active' : '';
-                            ?>
-                            <li class="<?= $class ?>"><?= Html::a($group['name'], ['/compare/default/index', 'cat_id' => $id]) ?></li>
-                        <?php } ?>
-                    </ul>
-
+<div class="table-responsive">
+    <table class="compareTable table table-bordered">
+        <thead>
+        <tr>
+            <td width="200px">
+                <div class="compare-count-products">/ <?= count($this->context->model->getIds()) ?> товаров</div>
+                <ul class="list-unstyled compare-categories-list text-uppercase">
                     <?php
-                    $form = ActiveForm::begin([
-                        'options' => ['id' => 'compare-form']
-                    ]);
+                    foreach ($result as $id => $group) {
+                        $categoryArray[] = $id;
+                        $gp[$id] = $group;
+                        $class = ($cat_id == $id) ? 'active' : '';
+                        ?>
+                        <li class="<?= $class ?>"><?= Html::a($group['name'], ['/compare/default/index', 'cat_id' => $id]) ?></li>
+                    <?php } ?>
+                </ul>
 
-                    echo $form->field($compareForm, 'type')
-                        ->radioList([0 => Yii::t('compare/default', 'ALL'), 1 => Yii::t('compare/default', 'ONLY_DIFF')])
-                        ->hint(Yii::t('compare/default', 'HINT'));
-                    ?>
-                    <?php ActiveForm::end(); ?>
-                </td>
                 <?php
+                $form = ActiveForm::begin([
+                    'options' => ['id' => 'compare-form']
+                ]);
 
-
-                foreach ($items as $p) { ?>
-                    <td>
-                        <div class="products_list">
-                            <?php
-
-                            echo $this->render('_product', ['data' => $p]);
-
-                            ?>
-                        </div>
-                    </td>
-                <?php } ?>
-            </tr>
-            </thead>
-            <tbody>
+                echo $form->field($compareForm, 'type')
+                    ->radioList([0 => Yii::t('compare/default', 'ALL'), 1 => Yii::t('compare/default', 'ONLY_DIFF')])
+                    ->hint(Yii::t('compare/default', 'HINT'));
+                ?>
+                <?php ActiveForm::end(); ?>
+            </td>
             <?php
-            // \yii\helpers\VarDumper::dump($group,10,true);die;
-            foreach ($result[$cat_id]['attributes'] as $attribute) {
-                $flag = false;
-                if ($isType) {
-                    $unq = [];
 
-                    foreach ($items as $product) {
 
-                        $unq[] = (string)$product->{'eav_' . $attribute->name};
-                    }
+            foreach ($items as $p) { ?>
+                <td>
+                    <div class="products_list">
+                        <?php
 
-                    foreach (array_count_values($unq) as $pid => $count) {
-                        $flag = true;
+                        echo $this->render('_product', ['data' => $p]);
 
-                        if ($count == count($items)) {
-                            $flag = false;
-                        }
-                    }
-                } else {
+                        ?>
+                    </div>
+                </td>
+            <?php } ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        // \yii\helpers\VarDumper::dump($group,10,true);die;
+        foreach ($result[$cat_id]['attributes'] as $attribute) {
+            $flag = false;
+            if ($isType) {
+                $unq = [];
+
+                foreach ($items as $product) {
+
+                    $unq[] = (string)$product->{'eav_' . $attribute->name};
+                }
+
+                foreach (array_count_values($unq) as $pid => $count) {
                     $flag = true;
+
+                    if ($count == count($items)) {
+                        $flag = false;
+                    }
                 }
-                if ($flag) {
-                    ?>
-                    <tr>
-                        <td class="attr"><?= $attribute->title ?></td>
-                        <?php foreach ($items as $product) {
-                            ?>
-                            <td>
-                                <?php
-                                $value = $product->{'eav_' . $attribute->name};
-                                echo $value === null ? Yii::t('shop/default', 'Не указано') : $value;
-                                ?>
-                            </td>
-                        <?php } ?>
-                    </tr>
-                    <?php
-                }
+            } else {
+                $flag = true;
             }
-            ?>
-            </tbody>
-        </table>
-    </div>
-    <?php
+            if ($flag) {
+                ?>
+                <tr>
+                    <td class="attr"><?= $attribute->title ?></td>
+                    <?php foreach ($items as $product) {
+                        ?>
+                        <td>
+                            <?php
+                            $value = $product->{'eav_' . $attribute->name};
+                            echo $value === null ? Yii::t('shop/default', 'Не указано') : $value;
+                            ?>
+                        </td>
+                    <?php } ?>
+                </tr>
+                <?php
+            }
+        }
+        ?>
+        </tbody>
+    </table>
+</div>
+<?php
 
 
 
