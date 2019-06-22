@@ -58,7 +58,7 @@ class DefaultController extends WebController
         }
 
         //return $this->render('empty', []);
-        return $this->render(CMS::isModile() ? 'mobile_index' : 'index', [
+        return $this->render(CMS::isMobile() ? 'mobile_index' : 'index', [
             'compareForm' => $compareForm,
             'cat_id' => $cat_id,
             'result' => $result
