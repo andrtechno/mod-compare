@@ -29,7 +29,7 @@ use panix\engine\Html;
             ?>
             <span class="price">
                 <?= $data->priceRange() ?></span>
-            <sup><?= Yii::$app->currency->active->symbol ?></sup>
+            <sup><?= Yii::$app->currency->active['symbol'] ?></sup>
         </div>
 
         <?php
