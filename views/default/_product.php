@@ -37,7 +37,7 @@ use panix\engine\Html;
         if (Yii::$app->hasModule('cart')) {
             if ($data->isAvailable) {
                 echo Html::a(Yii::t('cart/default', 'BUY'), 'javascript:cart.add(' . $data->id . ')', ['class' => 'btn btn-warning', 'onClick' => '']);
-                //   echo Html::button(Yii::t('shopModule.default', 'BUY'), array('class' => 'button btn-green cart', 'onClick' => 'shop.addCart(' . $data->id . ')'));
+                //   echo Html::button(Yii::t('shop/default', 'BUY'), array('class' => 'button btn-green cart', 'onClick' => 'shop.addCart(' . $data->id . ')'));
             } else {
                 echo Html::a('Нет в наличии', 'javascript:shop.notifier(' . $data->id . ');');
             }
