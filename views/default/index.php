@@ -2,6 +2,9 @@
 use panix\engine\Html;
 use panix\engine\bootstrap\ActiveForm;
 
+/**
+ * @var \panix\mod\compare\forms\CompareForm $compareForm
+ */
 $isType = isset($_POST['CompareForm']['type']) ? (int)$_POST['CompareForm']['type'] : 0;
 
 
@@ -15,13 +18,13 @@ $items = $result[$cat_id]['items'];
 <h1><?= $this->context->pageName; ?></h1>
 
 
-
 <div class="table-responsive">
     <table class="compareTable table table-bordered">
         <thead>
         <tr>
             <td width="200px">
-                <div class="compare-count-products">/ <?= count($this->context->model->getIds()) ?> товаров</div>
+                <div class="compare-count-products">
+                    / <?= Yii::t('shop/default', 'PRODUCTS_COUNTER', ['count' => count($this->context->model->getIds())]) ?> </div>
                 <ul class="list-unstyled compare-categories-list text-uppercase">
                     <?php
                     foreach ($result as $id => $group) {
@@ -89,10 +92,10 @@ $items = $result[$cat_id]['items'];
                     <td class="attr"><?= $attribute->title ?></td>
                     <?php foreach ($items as $product) {
                         ?>
-                        <td>
+                        <td class="text-center">
                             <?php
                             $value = $product->{'eav_' . $attribute->name};
-                            echo $value === null ? Yii::t('shop/default', 'Не указано') : $value;
+                            echo $value === null ? '<span class="text-danger">'.Yii::t('yii', '(not set)').'</span>' : $value;
                             ?>
                         </td>
                     <?php } ?>
@@ -105,7 +108,6 @@ $items = $result[$cat_id]['items'];
     </table>
 </div>
 <?php
-
 
 
 $this->registerJs("

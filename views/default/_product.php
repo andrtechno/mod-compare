@@ -1,62 +1,81 @@
 <?php
 use panix\engine\Html;
 
+/** @var \panix\mod\shop\models\Product $data */
 ?>
 
 
 <div class="product">
-    <div class="product-box clearfix">
-
-        <div class="clearfix gtile-i-150-minheight">
-            <?php
-            echo Html::a(Html::img($data->getMainImage('240x240')->url, ['alt' => $data->getMainImage()->title]), $data->getUrl(), array('class' => 'thumbnail'));
-            ?>
-        </div>
-
-
-        <div class="product-title">
-            <?php echo Html::a(Html::encode($data->name), $data->getUrl()) ?>
-        </div>
-
-        <div class="product-price">
-
-            <?php
-            if (Yii::$app->hasModule('discounts')) {
-                if ($data->appliedDiscount) {
-                    echo '<span class="price price-discount"><del>' . $data->toCurrentCurrency('originalPrice') . '</del></span>';
-                }
-            }
-            ?>
-            <span class="price">
-                <?= $data->priceRange() ?></span>
-            <sup><?= Yii::$app->currency->active['symbol'] ?></sup>
-        </div>
-
+    <div class="product-label-container">
         <?php
-        echo $data->beginCartForm();
-        if (Yii::$app->hasModule('cart')) {
-            if ($data->isAvailable) {
-                echo Html::a(Yii::t('cart/default', 'BUY'), 'javascript:cart.add(' . $data->id . ')', ['class' => 'btn btn-warning', 'onClick' => '']);
-                //   echo Html::button(Yii::t('shop/default', 'BUY'), array('class' => 'button btn-green cart', 'onClick' => 'shop.addCart(' . $data->id . ')'));
-            } else {
-                echo Html::a('Нет в наличии', 'javascript:shop.notifier(' . $data->id . ');');
-            }
+        foreach ($data->labels() as $label) {
+            echo '<div>';
+            echo Html::tag('span', $label['value'], [
+                'class' => 'product-label-tag badge badge-' . $label['class'],
+                'data-toggle' => 'tooltip',
+                // 'title' => $label['tooltip']
+            ]);
+            echo '</div>';
         }
-        echo $data->endCartForm();
         ?>
-
-        <?php
-        echo Html::a(Yii::t('app', 'DELETE'), ['/compare/default/remove', 'id' => $data->id], [
-            'class' => 'remove',
-        ]);
-        ?>
-
-
-
-        <?php echo $data->full_description; ?>
-
-
     </div>
+    <div class="product-image d-flex justify-content-center align-items-center">
+        <?php
+        echo Html::a(Html::img($data->getMainImage('340x265')->url, ['alt' => $data->name, 'class' => 'img-fluid loading']), $data->getUrl(), []);
+        ?>
+    </div>
+    <div class="product-info">
+        <?= Html::a(Html::encode($data->name), $data->getUrl(), ['class' => 'product-title']) ?>
+    </div>
+
+
+    <div class="row no-gutters mt-2">
+        <div class="col-6 col-sm-6 col-lg-7 d-flex align-items-center">
+            <div class="product-price">
+
+                <?php
+                if (Yii::$app->hasModule('discounts')) {
+                    if ($data->appliedDiscount) {
+                        ?>
+                        <span class="price price-discount">
+                                <span><?= Yii::$app->currency->number_format(Yii::$app->currency->convert($data->originalPrice)) ?></span>
+                                <sub><?= Yii::$app->currency->active['symbol'] ?></sub>
+                            </span>
+                        <span class="discount-sum">-<?= $data->discountSum; ?></span>
+                        <?php
+                    }
+                }
+                ?>
+                <div>
+                    <span class="price"><span><?= $data->priceRange() ?></span> <sub><?= Yii::$app->currency->active['symbol'] ?></sub></span>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-6 col-sm-6 col-lg-5 text-right">
+            <?php
+            if (Yii::$app->hasModule('cart')) {
+                if ($data->isAvailable) {
+                    echo $data->beginCartForm();
+                    echo Html::a(Yii::t('cart/default', 'BUY'), 'javascript:cart.add(' . $data->id . ')', array('class' => 'btn btn-warning btn-buy'));
+                    echo $data->endCartForm();
+                } else {
+                    \panix\mod\shop\bundles\NotifyAsset::register($this);
+                    echo Html::a(Yii::t('shop/default', 'NOT_AVAILABLE'), 'javascript:notify(' . $data->id . ');', array('class' => 'text-danger'));
+                }
+
+
+            }
+
+            echo Html::a(Yii::t('app', 'DELETE'), ['/compare/default/remove', 'id' => $data->id], [
+                'class' => 'btn btn-link text-danger remove',
+            ]);
+            ?>
+        </div>
+    </div>
+
+
 </div>
 
 
