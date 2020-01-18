@@ -72,7 +72,7 @@ use panix\engine\Html;
         </div>
         <div class="text-center">
             <?php
-            echo Html::a(Yii::t('app', 'DELETE'), ['/compare/default/remove', 'id' => $data->id], [
+            echo Html::a(Yii::t('app/default', 'DELETE'), ['/compare/default/remove', 'id' => $data->id], [
                 'class' => 'btn2 btn-link2 text-danger remove',
             ]);
             ?>
