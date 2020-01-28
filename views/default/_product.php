@@ -35,7 +35,7 @@ use panix\engine\Html;
 
                 <?php
                 if (Yii::$app->hasModule('discounts')) {
-                    if ($data->appliedDiscount) {
+                    if ($data->hasDiscount) {
                         ?>
                         <span class="price price-discount">
                                 <span><?= Yii::$app->currency->number_format(Yii::$app->currency->convert($data->originalPrice)) ?></span>
