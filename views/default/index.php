@@ -24,7 +24,7 @@ $items = $result[$cat_id]['items'];
         <tr>
             <td width="200px">
                 <div class="compare-count-products">
-                    / <?= Yii::t('shop/default', 'PRODUCTS_COUNTER', ['count' => count($this->context->model->getIds())]) ?> </div>
+                    / <?= Yii::t('shop/default', 'PRODUCTS_COUNTER', count($this->context->model->getIds())) ?> </div>
                 <ul class="list-unstyled compare-categories-list text-uppercase">
                     <?php
                     foreach ($result as $id => $group) {
