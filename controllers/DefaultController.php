@@ -38,7 +38,7 @@ class DefaultController extends WebController
         $this->pageName = Yii::t('compare/default', 'MODULE_NAME');
 
         $result = $this->model->getProducts();
-        $this->breadcrumbs[] = $this->pageName;
+        $this->view->params['breadcrumbs'][] = $this->pageName;
         $compareForm = new CompareForm();
         if (isset($_POST['CompareForm']))
             $compareForm->attributes = $_POST['CompareForm'];
